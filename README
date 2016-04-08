@@ -1,0 +1,5 @@
+Author -- Patrick Avery -- 2016
+
+Basic program for reading a POSCAR file and creating a Crystal class object from it.
+
+This crystal class allows for many manipulations for future programs.
