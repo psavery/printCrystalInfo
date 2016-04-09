@@ -626,10 +626,21 @@ bool Crystal::readPOSCAR(const string& filename,
                      stof(theSplit.at(1)),
                      stof(theSplit.at(2)));
       // If we have cartesian coordinates, we need to adjust the positions
+      // It's gonna look ugly...
       if (cart) {
-        tmp.x /= ls.a;
-        tmp.y /= ls.b;
-        tmp.z /= ls.c;
+        // We need alpha, beta, and gamma in radians
+        double alpha = deg2rad(ls.alpha);
+        double beta = deg2rad(ls.beta);
+        double gamma = deg2rad(ls.gamma);
+        // unit volume
+        double v = pow(1.0 - pow(cos(alpha), 2.0) - pow(cos(beta), 2.0) - pow(cos(gamma), 2.0) +
+                       2 * cos(alpha) * cos(beta) * cos(gamma), 0.5);
+        tmp.x = (1.0 / ls.a) * tmp.x + (-cos(gamma) / (ls.a * sin(gamma))) * tmp.y +
+                ((cos(alpha) * cos(gamma) - cos(beta)) / (ls.a * v * sin(gamma))) * tmp.z;
+        tmp.y = (1.0 / (ls.b * sin(gamma))) * tmp.y +
+                     ((cos(beta) * cos(gamma) - cos(alpha))
+                      / (ls.b * v * sin(gamma))) * tmp.z;
+        tmp.z = (sin(gamma) / (ls.c * v)) * tmp.z;
       }
       tmpAtoms.push_back(tmp);
     }
